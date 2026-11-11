@@ -22,15 +22,15 @@ class CarefulMoodTests(unittest.TestCase):
             with self.subTest(now=now):
                 self.assertEqual(pet.base_mood(st, now)[:2], (mood, {"startled": 100, "careful": 120}[mood]))
 
-    def test_normal_events_cannot_skip_or_restart_careful(self):
-        st = self.startle()
-        for now in [105, 120, 135, 149]:
-            self.event(st, "PreToolUse", now)
-        self.event(st, "Stop", 149, last_assistant_message="done")
-        self.assertEqual(pet.base_mood(st, 149)[0], "careful")
-        self.assertEqual(pet.base_mood(st, 150)[0], "careful")
-        self.event(st, "Stop", 150, last_assistant_message="done")
-        self.assertEqual(pet.base_mood(st, 150)[0], "done")
+    def test_normal_events_replace_careful_after_saved_startle_hold(self):
+        for event in ("PreToolUse", "Stop"):
+            with self.subTest(event=event):
+                st = self.startle()
+                self.event(st, event, 119.999)
+                self.assertEqual(pet.base_mood(st, 119.999)[0], "startled")
+                self.assertEqual(pet.base_mood(st, 120)[0], "careful")
+                self.event(st, event, 120)
+                self.assertEqual(pet.base_mood(st, 120)[0], pet.EVENT_MOOD[event])
 
     def test_uppercase_insult_and_correction_take_place_of_careful(self):
         for prompt, expected in [("YOU ARE USELESS", "defensive"), ("NO THAT IS WRONG", "embarrassed"), ("PLEASE CHECK THIS", "careful")]:
@@ -53,16 +53,24 @@ class CarefulMoodTests(unittest.TestCase):
         self.event(st, "PreToolUse", 150)
         self.assertEqual(pet.base_mood(st, 150)[0], "working")
 
-    def test_pending_reaction_has_its_full_hold_after_startle(self):
+    def test_pending_reaction_does_not_add_a_hold_after_startle(self):
         for reaction in ("defensive", "embarrassed"):
             with self.subTest(reaction=reaction):
                 st = self.startle()
                 pet.set_mood(st, reaction, 105)
-                pet.set_mood(st, "working", 120)
+                self.assertEqual(st["until"], 120)
                 self.assertEqual(pet.base_mood(st, 120)[0], reaction)
-                end = 120 + pet.HOLD[reaction]
+                pet.set_mood(st, "working", 120)
+                self.assertEqual(pet.base_mood(st, 120)[0], "working")
+
+    def test_directly_set_moods_keep_their_saved_hold(self):
+        for mood in ("careful", "defensive", "embarrassed", "confused", "failed"):
+            with self.subTest(mood=mood):
+                st = {"mood": "idle", "since": 0}
+                pet.set_mood(st, mood, 100)
+                end = 100 + pet.HOLD[mood]
                 pet.set_mood(st, "working", end - .001)
-                self.assertEqual(pet.base_mood(st, end - .001)[0], reaction)
+                self.assertEqual(pet.base_mood(st, end - .001)[0], mood)
                 pet.set_mood(st, "working", end)
                 self.assertEqual(pet.base_mood(st, end)[0], "working")
 

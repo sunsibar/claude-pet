@@ -287,8 +287,8 @@ def hook():
 
 def set_mood(st, mood, now):
     """Switch to a new mood, unless the current one is held and outranks it."""
-    cur, since, _ = base_mood(st, now)
-    held = now < max(st.get("until", 0), since + HOLD.get(cur, 0))
+    cur = base_mood(st, now)[0]
+    held = now < st.get("until", 0)
     if held and RANK.get(mood, 99) > RANK.get(cur, 99):
         if cur == "startled" and mood in ("defensive", "embarrassed"):
             pending = st.get("after_startled", "careful")
