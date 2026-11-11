@@ -196,7 +196,7 @@ def base_mood(st, now):
         "done": (DONE_TO_IDLE, "idle"),
         "idle": (IDLE_TO_SLEEP, NAPS[st.get("line", 0) % len(NAPS)]),
     }
-    while mood in relax and now - since >= relax[mood][0]:
+    while mood in relax and now - since > relax[mood][0]:
         after, nxt = relax[mood]
         mood, since = nxt, since + after
     return mood, since, st.get("line", 0)
