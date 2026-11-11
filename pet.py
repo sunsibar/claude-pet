@@ -185,13 +185,12 @@ def pick_frame(mood_data, t):
     return frames[i] if 0 <= i < len(frames) else frames[0]
 
 def base_mood(st, now):
-    """The latest event's mood after relaxing, including startled -> careful -> working."""
+    """The latest event's mood after relaxing, including startled -> careful."""
     mood, since = st.get("mood", "idle"), st.get("since", 0)
     if mood == "thinking" and now - since > THINK_TO_WORK:  # the one special case
         mood, since = "working", since + THINK_TO_WORK
     relax = {  # mood: (after this many seconds, becomes this mood)
         "startled": (HOLD["startled"], st.get("after_startled", "careful")),
-        "careful": (HOLD["careful"], "working"),
         "lecturing": (st.get("lecture_for", 0), "done"),
         "singing": (st.get("lecture_for", 0), "done"),
         "done": (DONE_TO_IDLE, "idle"),
@@ -260,16 +259,17 @@ def hook():
         raw = data.get("prompt") or ""
         prompt = raw.lower()
         st["bg"] = None
+        reactions = []
+        if insulting(prompt):
+            reactions.append("defensive")
+        if OOPS.search(prompt):
+            reactions.append("embarrassed")
+        reaction = min(reactions, key=RANK.__getitem__, default=None)
         if yelling(raw):
             mood = "startled"
-            if insulting(prompt):
-                after_startled = "defensive"
-            elif OOPS.search(prompt):
-                after_startled = "embarrassed"
-        elif insulting(prompt):
-            mood = "defensive"
-        elif OOPS.search(prompt):
-            mood = "embarrassed"
+            after_startled = reaction
+        elif reaction:
+            mood = reaction
     elif event == "Stop":
         text = answer_text(data)
         n = len(text)

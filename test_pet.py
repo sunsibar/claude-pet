@@ -18,9 +18,9 @@ class CarefulMoodTests(unittest.TestCase):
 
     def test_relaxes_without_new_hooks_at_exact_boundaries(self):
         st = self.startle()
-        for now, mood in [(119.999, "startled"), (120, "careful"), (149.999, "careful"), (150, "working")]:
+        for now, mood in [(119.999, "startled"), (120, "careful"), (149.999, "careful"), (150, "careful"), (1000, "careful")]:
             with self.subTest(now=now):
-                self.assertEqual(pet.base_mood(st, now)[:2], (mood, {"startled": 100, "careful": 120, "working": 150}[mood]))
+                self.assertEqual(pet.base_mood(st, now)[:2], (mood, {"startled": 100, "careful": 120}[mood]))
 
     def test_normal_events_cannot_skip_or_restart_careful(self):
         st = self.startle()
@@ -28,7 +28,7 @@ class CarefulMoodTests(unittest.TestCase):
             self.event(st, "PreToolUse", now)
         self.event(st, "Stop", 149, last_assistant_message="done")
         self.assertEqual(pet.base_mood(st, 149)[0], "careful")
-        self.assertEqual(pet.base_mood(st, 150)[0], "working")
+        self.assertEqual(pet.base_mood(st, 150)[0], "careful")
         self.event(st, "Stop", 150, last_assistant_message="done")
         self.assertEqual(pet.base_mood(st, 150)[0], "done")
 
@@ -39,6 +39,19 @@ class CarefulMoodTests(unittest.TestCase):
                 self.event(st, "UserPromptSubmit", 100, prompt=prompt)
                 self.assertEqual(pet.base_mood(st, 101)[0], "startled")
                 self.assertEqual(pet.base_mood(st, 120)[0], expected)
+
+    def test_prompt_reactions_follow_rank_for_normal_and_yelled_prompts(self):
+        for prompt in ("no you are useless", "NO YOU ARE USELESS"):
+            for expected, ranks in (("defensive", {}), ("embarrassed", {"embarrassed": 1, "defensive": 2})):
+                with self.subTest(prompt=prompt, expected=expected), patch.dict(pet.RANK, ranks):
+                    st = {"mood": "idle", "since": 0}
+                    self.event(st, "UserPromptSubmit", 100, prompt=prompt)
+                    self.assertEqual(pet.base_mood(st, 120)[0], expected)
+
+    def test_careful_accepts_working_after_hold_expires(self):
+        st = self.startle()
+        self.event(st, "PreToolUse", 150)
+        self.assertEqual(pet.base_mood(st, 150)[0], "working")
 
     def test_pending_reaction_has_its_full_hold_after_startle(self):
         for reaction in ("defensive", "embarrassed"):

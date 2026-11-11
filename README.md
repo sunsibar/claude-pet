@@ -98,11 +98,11 @@ Blob and raccoon are startled like this or, half the time, jumpy:
 <img src="gifs/gloop-surprised.gif" width="32%" alt="gloop surprised"> <img src="gifs/bandit-surprised.gif" width="32%" alt="bandit surprised">
 
 </details>
-<details open><summary><b>careful</b> — after 20 seconds of being startled, takes small, cautious steps for 30 seconds, then returns to working.</summary>
+<details open><summary><b>careful</b> — after 20 seconds of being startled, takes small, cautious steps, protected for 30 seconds, then waits for the next event to change mood.</summary>
 
 <img src="gifs/gloop-careful.gif" width="32%" alt="gloop careful"> <img src="gifs/bandit-careful.gif" width="32%" alt="bandit careful"> <img src="gifs/quack-careful.gif" width="32%" alt="quack careful">
 
-An insult or correction during the startle takes its place: defensive first, otherwise embarrassed. A defensive or embarrassed reaction already being held when the yelling starts also returns after the startle. Ordinary tool calls do not interrupt careful; higher-priority reactions can.
+An insult or correction during the startle takes its place, chosen using the mood priorities (currently defensive before embarrassed). A defensive or embarrassed reaction already being held when the yelling starts also returns after the startle. Ordinary tool calls do not interrupt careful during its 30-second hold; higher-priority reactions can.
 </details>
 
 <details><summary><b>defensive</b> — when your prompt insults it ("you are useless", "wtf", "are you kidding me", …). Stays 60 seconds.</summary>
@@ -132,7 +132,7 @@ An insult or correction during the startle takes its place: defensive first, oth
 
 ### Priorities
 From highest to lowest: startled → defensive → embarrassed/confused/failed → careful → all other moods.
-A mood with a hold time (startled 20 s, defensive 60 s, embarrassed 5 s, confused 5 s, failed 5 s, careful 30 s) can only be replaced by an equal or higher mood during that time; afterwards, by the next event. Startled automatically becomes careful (or a pending defensive/embarrassed reaction) even without another event; careful automatically becomes working. So an insulted pet keeps sulking through your next prompt.
+A mood with a hold time (startled 20 s, defensive 60 s, embarrassed 5 s, confused 5 s, failed 5 s, careful 30 s) can only be replaced by an equal or higher mood during that time; afterwards, by the next event. Startled automatically becomes careful (or a pending defensive/embarrassed reaction) even without another event; careful stays until another event changes it, just like defensive, embarrassed, confused, and failed. So an insulted pet keeps sulking through your next prompt.
 
 All numbers (timings, thresholds, priorities) and trigger words can be changed at the top of `pet.py`.
 
