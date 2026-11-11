@@ -131,7 +131,7 @@ Blob and raccoon are startled like this or, half the time, jumpy:
 
 ### Priorities
 From highest to lowest: startled → defensive → embarrassed/confused/failed → careful → all other moods.
-When an event sets a mood, it saves a hold deadline (startled 20 s, defensive 60 s, embarrassed 5 s, confused 5 s, failed 5 s, careful 30 s if set directly). Only an equal or higher mood can replace it before that saved deadline; afterwards, the next event can replace it. Startled automatically becomes careful (or a pending defensive/embarrassed reaction) even without another event, without extending the saved hold deadline; careful stays until another event changes it, just like defensive, embarrassed, confused, and failed. So an insulted pet keeps sulking through your next prompt.
+When an event sets a mood, it saves a hold deadline (startled 20 s, defensive 60 s, embarrassed 5 s, confused 5 s, failed 5 s, careful 30 s if set directly). Only an equal or higher mood can replace it before that saved deadline; afterwards, the next event can replace it. Startled automatically becomes careful even without another event, without extending the saved hold deadline; careful stays until another event changes it, just like defensive, embarrassed, confused, and failed. So an insulted pet keeps sulking through your next prompt.
 
 All numbers (timings, thresholds, priorities) and trigger words can be changed at the top of `pet.py`.
 
