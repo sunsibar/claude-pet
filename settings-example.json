@@ -1,0 +1,15 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "python3 ~/.claude/pet/pet.py show",
+    "refreshInterval": 1
+  },
+  "hooks": {
+    "SessionStart":       [{ "hooks": [{ "type": "command", "command": "python3 ~/.claude/pet/pet.py hook" }] }],
+    "UserPromptSubmit":   [{ "hooks": [{ "type": "command", "command": "python3 ~/.claude/pet/pet.py hook" }] }],
+    "PreToolUse":         [{ "hooks": [{ "type": "command", "command": "python3 ~/.claude/pet/pet.py hook" }] }],
+    "PostToolUseFailure": [{ "hooks": [{ "type": "command", "command": "python3 ~/.claude/pet/pet.py hook" }] }],
+    "PermissionRequest":  [{ "hooks": [{ "type": "command", "command": "python3 ~/.claude/pet/pet.py hook" }] }],
+    "Stop":               [{ "hooks": [{ "type": "command", "command": "python3 ~/.claude/pet/pet.py hook" }] }]
+  }
+}

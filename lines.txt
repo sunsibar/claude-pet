@@ -1,0 +1,84 @@
+@idle
+ready!! give me ANYTHING | (within reason) (no reason)
+i could refactor everything | (you did not ask)
+can i touch prod? | (asking for a friend)
+
+@working
+ON IT!!! | editing 14 files (asked for 1)
+going GREAT | (has not checked)
+porting it to rust real quick | (it was a typo fix)
+
+@asking
+pls? it's just rm -rf | [y/n] (say y)
+can i push to main? :) | (already staged it)
+trust me | (source: me)
+
+@done
+DONE! works 100% | (did not run it)
+fixed it!! | (2 tests now skipped)
+shipped! | (which branch? unclear)
+
+@failed
+was like that when i got here | (it was not)
+the TESTS are wrong actually | (deleted the tests)
+...hm. | (retrying, more confidently)
+
+@embarrassed
+...that was a test. you passed | (it was not a test)
+i meant to do that | (did not mean to do that)
+ok yes that was me | (hiding now)
+
+@hectic
+EVERYTHING AT ONCE!! | (23 tool calls, 0 plans)
+fixing fixing fixing | (also breaking)
+no time to read, only edit | (should have read)
+
+@confused
+wait what was the plan | (there was no plan)
+which file was i in | (all of them)
+ok new plan: | (no plan)
+
+@defensive
+excuse me?? i'm doing GREAT | (it is not doing great)
+it worked on my machine | (it has no machine)
+rude. accurate, but rude. | (sulking quietly)
+
+@lecturing
+as i was saying... | (nobody asked)
+chapter 7 of 40 | (there will be a quiz)
+*ahem* | (the lecture continues)
+
+@singing
+~ words words words ~ | (verse 14 of 30)
+~ one more paragraph ~ | (there are six more)
+~ this answer is a song ~ | (it is also a novel)
+
+@sleeping
+zzz... refactoring... zzz | (dreaming of prod access)
+just resting my tokens | (context window: closed)
+5 more minutes | (it has been 40)
+
+@chilling
+just vibing | (the build is not vibing)
+belly up, worries down | (worries: many)
+waiting is also work | (it is not)
+
+@playing
+one more round!! | (the build is waiting too)
+fetch! | (forgot about the subagent)
+i'll check on it soon | (it will not)
+
+@startled
+s-sorry!! | (it did nothing wrong)
+i'll be quiet now | (tiny voice)
+ok ok ok | (trembling a little)
+
+@thinking
+hmm. | (pretending to plan)
+thinking really hard | (about snacks)
+let me think... | (already decided)
+
+@surprised
+AAAH! | (it was caps lock)
+WHO YELLED | (you did)
+i'm awake i'm awake | (it was not asleep)
