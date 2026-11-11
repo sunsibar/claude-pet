@@ -102,7 +102,6 @@ Blob and raccoon are startled like this or, half the time, jumpy:
 
 <img src="gifs/gloop-careful.gif" width="32%" alt="gloop careful"> <img src="gifs/bandit-careful.gif" width="32%" alt="bandit careful"> <img src="gifs/quack-careful.gif" width="32%" alt="quack careful">
 
-An insult or correction during the startle takes its place, chosen using the mood priorities (currently defensive before embarrassed). A defensive or embarrassed reaction already being held when the yelling starts also returns after the startle. This automatic transition adds no new hold, so the next event can replace careful or the pending reaction.
 </details>
 
 <details><summary><b>defensive</b> — when your prompt insults it ("you are useless", "wtf", "are you kidding me", …). Stays 60 seconds.</summary>
