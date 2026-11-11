@@ -185,7 +185,7 @@ def pick_frame(mood_data, t):
     return frames[i] if 0 <= i < len(frames) else frames[0]
 
 def base_mood(st, now):
-    """The latest event's mood after relaxing, including startled -> careful."""
+    """The latest event's mood, after it has had time to relax (thinking -> working, done -> idle -> nap)."""
     mood, since = st.get("mood", "idle"), st.get("since", 0)
     if mood == "thinking" and now - since > THINK_TO_WORK:  # the one special case
         mood, since = "working", since + THINK_TO_WORK
