@@ -258,16 +258,12 @@ def hook():
         raw = data.get("prompt") or ""
         prompt = raw.lower()
         st["bg"] = None
-        reactions = []
-        if insulting(prompt):
-            reactions.append("defensive")
-        if OOPS.search(prompt):
-            reactions.append("embarrassed")
-        reaction = min(reactions, key=RANK.__getitem__, default=None)
         if yelling(raw):
             mood = "startled"
-        elif reaction:
-            mood = reaction
+        elif insulting(prompt):
+            mood = "defensive"
+        elif OOPS.search(prompt):
+            mood = "embarrassed"
     elif event == "Stop":
         text = answer_text(data)
         n = len(text)
