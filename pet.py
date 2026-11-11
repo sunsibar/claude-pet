@@ -22,7 +22,7 @@ WAIT = re.compile(r"(in the background|still running|will be notified|get notifi
 # Moods from highest to lowest priority; moods on one line rank the same.
 # One rule: a mood with a HOLD time can't be replaced by a lower-priority mood until that time is over.
 # After that (or for moods without a HOLD time), any new mood replaces it.
-PRIORITY = [["startled"], ["defensive"], ["embarrassed", "confused", "failed"],
+PRIORITY = [["startled"], ["defensive"], ["embarrassed", "confused", "failed"], ["careful"],
             ["asking", "hectic", "working", "thinking", "lecturing", "singing", "done",
              "idle", "sleeping", "chilling", "playing", "surprised"]]
 RANK = {m: i for i, row in enumerate(PRIORITY) for m in row}  # lower number = higher priority
@@ -190,6 +190,7 @@ def base_mood(st, now):
     if mood == "thinking" and now - since > THINK_TO_WORK:  # the one special case
         mood, since = "working", since + THINK_TO_WORK
     relax = {  # mood: (after this many seconds, becomes this mood)
+        "startled": (HOLD["startled"], "careful"),
         "lecturing": (st.get("lecture_for", 0), "done"),
         "singing": (st.get("lecture_for", 0), "done"),
         "done": (DONE_TO_IDLE, "idle"),

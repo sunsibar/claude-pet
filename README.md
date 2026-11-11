@@ -98,6 +98,12 @@ Blob and raccoon are startled like this or, half the time, jumpy:
 <img src="gifs/gloop-surprised.gif" width="32%" alt="gloop surprised"> <img src="gifs/bandit-surprised.gif" width="32%" alt="bandit surprised">
 
 </details>
+<details open><summary><b>careful</b> — after 20 seconds of being startled, takes small, cautious steps until the next event changes its mood.</summary>
+
+<img src="gifs/gloop-careful.gif" width="32%" alt="gloop careful"> <img src="gifs/bandit-careful.gif" width="32%" alt="bandit careful"> <img src="gifs/quack-careful.gif" width="32%" alt="quack careful">
+
+</details>
+
 <details><summary><b>defensive</b> — when your prompt insults it ("you are useless", "wtf", "are you kidding me", …). Stays 60 seconds.</summary>
 
 <img src="gifs/gloop-defensive.gif" width="32%" alt="gloop defensive"> <img src="gifs/bandit-defensive.gif" width="32%" alt="bandit defensive"> <img src="gifs/quack-defensive.gif" width="32%" alt="quack defensive">
@@ -124,7 +130,7 @@ Blob and raccoon are startled like this or, half the time, jumpy:
 ## Internals and how to customize
 
 ### Priorities
-From highest to lowest: startled → defensive → embarrassed/confused/failed → all other moods.
+From highest to lowest: startled → defensive → embarrassed/confused/failed → careful → all other moods.
 A mood with a hold time (startled 20 s, defensive 60 s, embarrassed 5 s, confused 5 s, failed 5 s) can only be replaced by an equal or higher mood during that time; afterwards, by the next event. So an insulted pet keeps sulking through your next prompt.
 
 All numbers (timings, thresholds, priorities) and trigger words can be changed at the top of `pet.py`.
@@ -140,7 +146,7 @@ All numbers (timings, thresholds, priorities) and trigger words can be changed a
 
 ### Art format
 
-- A line starting with `@mood` begins a mood section. Moods: `idle`, `thinking`, `working`, `asking`, `done`, `failed`, `embarrassed`, `hectic`, `confused`, `startled`, `surprised` (optional, shown instead of startled half the time), `defensive`, `lecturing`, `singing`, `sleeping`, `chilling`, `playing`.
+- A line starting with `@mood` begins a mood section. Moods: `idle`, `thinking`, `working`, `asking`, `done`, `failed`, `embarrassed`, `hectic`, `confused`, `startled`, `careful`, `surprised` (optional, shown instead of startled half the time), `defensive`, `lecturing`, `singing`, `sleeping`, `chilling`, `playing`.
 - After the mood name you can write a frame order (frame numbers start at 0):
   `@idle 0 0 1 0 2`
   Use `|` to split into a play-once part and a looping part:

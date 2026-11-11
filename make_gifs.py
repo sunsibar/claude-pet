@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pet
 
 MOODS = ["idle", "thinking", "working", "hectic", "asking", "failed", "confused",
-         "startled", "surprised", "defensive", "embarrassed", "lecturing", "singing", "done", "sleeping", "chilling", "playing"]
+         "startled", "surprised", "careful", "defensive", "embarrassed", "lecturing", "singing", "done", "sleeping", "chilling", "playing"]
 FRAMES_PER_MOOD = 8
 MS_PER_FRAME = 450
 FONTS = ["/System/Library/Fonts/Menlo.ttc", "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"]
