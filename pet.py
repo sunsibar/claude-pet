@@ -22,11 +22,11 @@ WAIT = re.compile(r"(in the background|still running|will be notified|get notifi
 # Moods from highest to lowest priority; moods on one line rank the same.
 # One rule: a mood with a HOLD time can't be replaced by a lower-priority mood until that time is over.
 # After that (or for moods without a HOLD time), any new mood replaces it.
-PRIORITY = [["startled"], ["defensive"], ["embarrassed", "confused", "failed"],
+PRIORITY = [["startled"], ["defensive"], ["embarrassed", "confused", "failed"], ["careful"],
             ["asking", "hectic", "working", "thinking", "lecturing", "singing", "done",
              "idle", "sleeping", "chilling", "playing", "surprised"]]
 RANK = {m: i for i, row in enumerate(PRIORITY) for m in row}  # lower number = higher priority
-HOLD = {"startled": 20, "defensive": 60, "embarrassed": 5, "confused": 5, "failed": 5}  # seconds
+HOLD = {"startled": 20, "defensive": 60, "embarrassed": 5, "confused": 5, "failed": 5, "careful": 30}  # seconds
 VARIANTS = {"startled": "surprised"}  # shown instead half the time, if the pet has art for it
 THINK_TO_WORK = 10  # seconds of "thinking" after your prompt before it counts as "working"
 STARTLE_CAPS = 0.6  # share of letters in capitals for "startled" ...
@@ -185,17 +185,19 @@ def pick_frame(mood_data, t):
     return frames[i] if 0 <= i < len(frames) else frames[0]
 
 def base_mood(st, now):
-    """The latest event's mood, after it has had time to relax (thinking -> working, done -> idle -> nap)."""
+    """The latest event's mood after relaxing, including startled -> careful -> working."""
     mood, since = st.get("mood", "idle"), st.get("since", 0)
     if mood == "thinking" and now - since > THINK_TO_WORK:  # the one special case
         mood, since = "working", since + THINK_TO_WORK
     relax = {  # mood: (after this many seconds, becomes this mood)
+        "startled": (HOLD["startled"], st.get("after_startled", "careful")),
+        "careful": (HOLD["careful"], "working"),
         "lecturing": (st.get("lecture_for", 0), "done"),
         "singing": (st.get("lecture_for", 0), "done"),
         "done": (DONE_TO_IDLE, "idle"),
         "idle": (IDLE_TO_SLEEP, NAPS[st.get("line", 0) % len(NAPS)]),
     }
-    while mood in relax and now - since > relax[mood][0]:
+    while mood in relax and now - since >= relax[mood][0]:
         after, nxt = relax[mood]
         mood, since = nxt, since + after
     return mood, since, st.get("line", 0)
@@ -240,6 +242,7 @@ def hook():
     st = load_state(session)
     now = time.time()
     mood = EVENT_MOOD.get(event)
+    after_startled = None
 
     tools = [t for t in st.get("tools", []) if now - t < HECTIC_WINDOW]
     if event == "PreToolUse":
@@ -259,6 +262,10 @@ def hook():
         st["bg"] = None
         if yelling(raw):
             mood = "startled"
+            if insulting(prompt):
+                after_startled = "defensive"
+            elif OOPS.search(prompt):
+                after_startled = "embarrassed"
         elif insulting(prompt):
             mood = "defensive"
         elif OOPS.search(prompt):
@@ -274,15 +281,29 @@ def hook():
     st["tools"] = tools
     if mood:
         set_mood(st, mood, now)
+        if after_startled:
+            set_mood(st, after_startled, now)
     save_state(session, st)
 
 def set_mood(st, mood, now):
     """Switch to a new mood, unless the current one is held and outranks it."""
-    cur = base_mood(st, now)[0]
-    if now < st.get("until", 0) and RANK.get(mood, 99) > RANK.get(cur, 99):
+    cur, since, _ = base_mood(st, now)
+    held = now < max(st.get("until", 0), since + HOLD.get(cur, 0))
+    if held and RANK.get(mood, 99) > RANK.get(cur, 99):
+        if cur == "startled" and mood in ("defensive", "embarrassed"):
+            pending = st.get("after_startled", "careful")
+            st["after_startled"] = min((pending, mood), key=RANK.__getitem__)
         return  # current mood is still held and has higher priority
     if mood in ("working", "hectic") and cur == mood:
         return  # already busy: keep the animation running instead of restarting it
+    if mood == "startled":
+        # Preserve a reaction already in progress, including one queued by an earlier yell.
+        pending = st.get("after_startled", "careful") if cur == "startled" else "careful"
+        if held and cur in ("defensive", "embarrassed"):
+            pending = cur
+        st["after_startled"] = pending
+    else:
+        st.pop("after_startled", None)
     st.update(mood=mood, since=now, line=random.randrange(1000), until=now + HOLD.get(mood, 0))
 
 def all_pets():

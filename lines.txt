@@ -82,3 +82,8 @@ let me think... | (already decided)
 AAAH! | (it was caps lock)
 WHO YELLED | (you did)
 i'm awake i'm awake | (it was not asleep)
+
+@careful
+one tiny step... | (checking both ways)
+coast clear? | (asking the coast)
+ok. slowly. | (tiptoeing through the diff)

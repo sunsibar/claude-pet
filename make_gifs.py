@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pet
 
 MOODS = ["idle", "thinking", "working", "hectic", "asking", "failed", "confused",
-         "startled", "surprised", "defensive", "embarrassed", "lecturing", "singing", "done", "sleeping", "chilling", "playing"]
+         "startled", "surprised", "careful", "defensive", "embarrassed", "lecturing", "singing", "done", "sleeping", "chilling", "playing"]
 FRAMES_PER_MOOD = 8
 MS_PER_FRAME = 450
 FONTS = ["/System/Library/Fonts/Menlo.ttc", "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"]
@@ -30,11 +30,12 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     for name in pet.all_pets():
         moods, color = pet.load_pet(name), ansi256(pet.COLORS.get(name, "0;0"))
-        images = []
+        images, durations = [], []
         for mood in MOODS:
             if mood not in moods:
                 continue
             start = len(images)
+            duration = 1000 if mood == "careful" else MS_PER_FRAME  # careful moves at live speed
             main_text, aside = (lines.get(mood) or [("", "")])[0]
             intro, loop = moods[mood]["order"]
             for t in range(max(FRAMES_PER_MOOD, len(intro) + len(loop))):  # one full cycle
@@ -48,11 +49,12 @@ def main():
                     d.text((10, y), frame[r] if r < len(frame) else "", font=font, fill=color)
                     d.text((10 + cw * (pet.WIDTH + 1), y), right[r][0], font=font, fill=right[r][1])
                 images.append(img)
+                durations.append(duration)
             one = images[start:]
             one[0].save(os.path.join(out_dir, f"{name}-{mood}.gif"), save_all=True,
-                        append_images=one[1:], duration=MS_PER_FRAME, loop=0)
+                        append_images=one[1:], duration=duration, loop=0)
         path = os.path.join(out_dir, name + ".gif")
-        images[0].save(path, save_all=True, append_images=images[1:], duration=MS_PER_FRAME, loop=0)
+        images[0].save(path, save_all=True, append_images=images[1:], duration=durations, loop=0)
         print("wrote", path)
 
 if __name__ == "__main__":
