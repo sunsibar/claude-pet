@@ -26,7 +26,7 @@ PRIORITY = [["startled"], ["defensive"], ["embarrassed", "confused", "failed"], 
             ["asking", "hectic", "working", "thinking", "lecturing", "singing", "done",
              "idle", "sleeping", "chilling", "playing", "surprised"]]
 RANK = {m: i for i, row in enumerate(PRIORITY) for m in row}  # lower number = higher priority
-HOLD = {"startled": 20, "defensive": 60, "embarrassed": 5, "confused": 5, "failed": 5, "careful": 30}  # seconds
+HOLD = {"startled": 20, "defensive": 60, "embarrassed": 5, "confused": 5, "failed": 5}  # seconds
 VARIANTS = {"startled": "surprised"}  # shown instead half the time, if the pet has art for it
 THINK_TO_WORK = 10  # seconds of "thinking" after your prompt before it counts as "working"
 STARTLE_CAPS = 0.6  # share of letters in capitals for "startled" ...
