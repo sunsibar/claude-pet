@@ -28,6 +28,8 @@ PRIORITY = [["startled"], ["defensive"], ["embarrassed", "confused", "failed"], 
 RANK = {m: i for i, row in enumerate(PRIORITY) for m in row}  # lower number = higher priority
 HOLD = {"startled": 20, "defensive": 60, "embarrassed": 5, "confused": 5, "failed": 5}  # seconds
 VARIANTS = {"startled": "surprised"}  # shown instead half the time, if the pet has art for it
+SWITCH = 30         # a mood with alternative animations (@idle~name in the pet file) re-picks one every this many seconds
+EXCITED = 25        # ... but "working" always starts with its first animation (the excited one) for this long
 THINK_TO_WORK = 10  # seconds of "thinking" after your prompt before it counts as "working"
 STARTLE_CAPS = 0.6  # share of letters in capitals for "startled" ...
 STARTLE_LETTERS = 10  # ... in a prompt with at least this many letters ...
@@ -184,6 +186,15 @@ def pick_frame(mood_data, t):
         i = intro[-1]
     return frames[i] if 0 <= i < len(frames) else frames[0]
 
+def pick_variant(pet, mood, t, line):
+    """Which of the mood's animations to show (@mood, @mood~a, @mood~b ...), and the time within it."""
+    names = [m for m in pet if m == mood or m.startswith(mood + "~")] or ["idle"]
+    start = EXCITED if mood == "working" else 0
+    if len(names) == 1 or t < start:
+        return names[0], t
+    period, t = divmod(t - start, SWITCH)
+    return names[random.Random(line * 1000 + period).randrange(len(names))], t
+
 def base_mood(st, now):
     """The latest event's mood, after it has had time to relax (thinking -> working, done -> idle -> nap)."""
     mood, since = st.get("mood", "idle"), st.get("since", 0)
@@ -216,8 +227,10 @@ def show(name):
     pet = load_pet(name)
     if mood in VARIANTS and VARIANTS[mood] in pet and line % 2:
         mood = VARIANTS[mood]  # half the time, a pet that has the variant shows it instead
-    mood_data = pet.get(mood) or pet["idle"]
-    frame = pick_frame(mood_data, max(0, int(now - since)))
+    anim, t = pick_variant(pet, mood, max(0, int(now - since)), line)
+    mood_data = pet[anim]
+    frame = pick_frame(mood_data, t)
+    width = max([WIDTH] + [len(r) for f in mood_data["frames"] for r in f])  # wide scenes push the text right
 
     says = load_lines().get(mood) or [("", "")]
     main, aside = says[line % len(says)]
@@ -231,7 +244,7 @@ def show(name):
     for r in range(4):
         row = frame[r] if r < len(frame) else ""
         # leading reset keeps the art's leading spaces from being trimmed
-        out.append(f"\033[0m\033[{color}m{row.ljust(WIDTH)}\033[0m {right[r]}")
+        out.append(f"\033[0m\033[{color}m{row.ljust(width)}\033[0m {right[r]}")
     print("\n".join(out))
 
 def hook():
