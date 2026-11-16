@@ -12,7 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 STATE_DIR = os.path.join(HERE, "state")
 CHOICE_FILE = os.path.join(HERE, "chosen-pet.txt")
 
-COLORS = {"gloop": "38;5;75", "bandit": "38;5;141", "quack": "38;5;220"}  # ANSI 256 colors
+COLORS = {"gloop": "38;5;75", "bandit": "38;5;141", "quack": "38;5;220", "steep": "38;5;180"}  # ANSI 256 colors
 WIDTH = 13          # columns reserved for the pet before the text starts
 DONE_TO_IDLE = 30   # seconds before "done" relaxes back to "idle"
 IDLE_TO_SLEEP = 300 # seconds of "idle" before the pet naps
