@@ -17,7 +17,6 @@ WIDTH = 13          # columns reserved for the pet before the text starts
 DONE_TO_IDLE = 30   # seconds before "done" relaxes back to "idle"
 IDLE_TO_SLEEP = 300 # seconds of "idle" before the pet naps
 NAPS = ["sleeping", "chilling", "playing"]  # a nap is one of these, at random
-NAP_SHARED = ("sleeping", "chilling")  # these two also use the @nap~name animations
 # a reply like this, or a background shell / subagent started this turn, = nap instead of "done"
 WAIT = re.compile(r"(in the background|still running|will be notified|get notified|i'll wait|waiting (for|on)|once (it|they|that)'?s? (finish|complete|done))", re.I)
 # Moods from highest to lowest priority; moods on one line rank the same.
@@ -189,8 +188,7 @@ def pick_frame(mood_data, t):
 
 def pick_variant(pet, mood, t, line):
     """Which of the mood's animations to show (@mood, @mood~a, @mood~b ...), and the time within it."""
-    shared = ("nap",) if mood in NAP_SHARED else ()  # @nap~name animations show while sleeping or chilling
-    names = [m for m in pet if m == mood or any(m.startswith(k + "~") for k in (mood,) + shared)] or ["idle"]
+    names = [m for m in pet if m == mood or m.startswith(mood + "~")] or ["idle"]
     start = EXCITED if mood == "working" else 0
     if len(names) == 1 or t < start:
         return names[0], t
