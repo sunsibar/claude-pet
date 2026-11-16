@@ -28,7 +28,7 @@ PRIORITY = [["startled"], ["defensive"], ["embarrassed", "confused", "failed"], 
 RANK = {m: i for i, row in enumerate(PRIORITY) for m in row}  # lower number = higher priority
 HOLD = {"startled": 20, "defensive": 60, "embarrassed": 5, "confused": 5, "failed": 5}  # seconds
 VARIANTS = {"startled": "surprised"}  # shown instead half the time, if the pet has art for it
-SWITCH = 30         # a mood with alternative animations (@idle~name in the pet file) re-picks one every this many seconds
+SWITCH = 300        # a mood with alternative animations (@idle~name in the pet file) re-picks one every this many seconds
 EXCITED = 25        # ... but "working" always starts with its first animation (the excited one) for this long
 THINK_TO_WORK = 10  # seconds of "thinking" after your prompt before it counts as "working"
 STARTLE_CAPS = 0.6  # share of letters in capitals for "startled" ...
