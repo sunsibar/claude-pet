@@ -6,7 +6,7 @@
 #   python3 pet.py hook         -> called by Claude Code hooks, sets the mood
 #   python3 pet.py install      -> links this folder to ~/.claude/pet and adds the pet to ~/.claude/settings.json
 #   python3 pet.py uninstall    -> removes the pet from ~/.claude/settings.json again
-import json, os, random, re, sys, time
+import json, os, random, re, sys, time, unicodedata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATE_DIR = os.path.join(HERE, "state")
@@ -230,7 +230,7 @@ def show(name):
     anim, t = pick_variant(pet, mood, max(0, int(now - since)), line)
     mood_data = pet[anim]
     frame = pick_frame(mood_data, t)
-    width = max([WIDTH] + [len(r) for f in mood_data["frames"] for r in f])  # wide scenes push the text right
+    width = max([WIDTH] + [cols(r) for f in mood_data["frames"] for r in f])  # wide scenes push the text right
 
     says = load_lines().get(anim.split("~")[0]) or load_lines().get(mood) or [("", "")]
     main, aside = says[line % len(says)]
@@ -244,8 +244,12 @@ def show(name):
     for r in range(4):
         row = frame[r] if r < len(frame) else ""
         # leading reset keeps the art's leading spaces from being trimmed
-        out.append(f"\033[0m\033[{color}m{row.ljust(width)}\033[0m {right[r]}")
+        out.append(f"\033[0m\033[{color}m{row + ' ' * (width - cols(row))}\033[0m {right[r]}")
     print("\n".join(out))
+
+def cols(s):
+    """Screen columns a string takes: emoji and Chinese/Japanese characters take two."""
+    return sum(2 if unicodedata.east_asian_width(c) in "WF" else 1 for c in s)
 
 def hook():
     data = read_stdin()
